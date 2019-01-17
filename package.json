@@ -1,0 +1,19 @@
+{
+  "name": "shop-stop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NikolayNikolaev1/Shop-Stop.git"
+  },
+  "author": "N.Nikolaev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NikolayNikolaev1/Shop-Stop/issues"
+  },
+  "homepage": "https://github.com/NikolayNikolaev1/Shop-Stop#readme"
+}
