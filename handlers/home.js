@@ -26,6 +26,18 @@ module.exports = (req, res) => {
                 'Content-Type': 'text/html'
             });
 
+            let products = datavase.products.getAll();
+            let contet = '';
+            
+            for (let product of products) {
+                //TODO: fix this..
+                content += '<div class="product-card"><img class="product-img" src="${product.image}"><h2>${product.name}</h2><p>${product.description}</p></div>'
+            }
+
+            let html = data.toString().replace('{content}', content);
+
+            //TODO: Send HTML as respone.
+
             res.write(data);
             res.end;
         });
