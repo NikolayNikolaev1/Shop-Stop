@@ -15,10 +15,11 @@ module.exports = (req, res) => {
 
     if (req.pathname.startsWith('/content/') && req.method === 'GET') {
         let filePath = path.normalize(
-            path.join(__dirname, '..' + req.pathname));
+            path.join(__dirname, `..${req.pathname}`));
 
         fs.readFile(filePath, (err, data) => {
             if (err) {
+                console.log(err);
                 res.writeHead(404, {
                     'Content-Type': 'text/plain'
                 });
@@ -34,6 +35,7 @@ module.exports = (req, res) => {
 
             res.write(data);
             res.end;
+            return;
         });
     } else {
         return true;

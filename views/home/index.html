@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>ShopStop</title>
   <link rel="stylesheet" type="text/css" href="/content/styles/site.css">
-  <link rel="icon" type="image/x-icon" href="/content/images/favicon.ico"/>
+  <link rel="icon" type="image/png" href="/content/images/favicon.ico"/>
 </head>
 <body>
   <header>
@@ -20,6 +20,11 @@
   </header>
   <main>
     <h1 class="head-title">Welcome to ShopStop!</h1>
+
+    <form if="search-form">
+      <input type="text" name="query" placeholder="Search...">
+      <input type="submit" value="Search">
+    </form>
 
     <div class="cards">
       {content}

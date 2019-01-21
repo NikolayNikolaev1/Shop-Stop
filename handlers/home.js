@@ -1,6 +1,8 @@
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
+const database = require('../config/database');
+const qs = require('querystring');
 
 module.exports = (req, res) => {
     req.pathname = req.pathname || url.parse(req.url).pathname;
@@ -26,20 +28,29 @@ module.exports = (req, res) => {
                 'Content-Type': 'text/html'
             });
 
-            let products = datavase.products.getAll();
-            let contet = '';
+            let queryData = qs.parse(url.parse(req.url).query);
+            let products = database.products.getAll();
+            let content = '';
+
+            if (queryData.query) {
+                products = database.products.filter(product => product.name === queryData.name);
+            }
             
             for (let product of products) {
                 //TODO: fix this..
-                content += '<div class="product-card"><img class="product-img" src="${product.image}"><h2>${product.name}</h2><p>${product.description}</p></div>'
+                content += 
+                `<div class="product-card">
+                    <img class="product-img" src="${product.image}">
+                    <h2>${product.name}</h2>
+                    <p>${product.description}</p>
+                </div>`
             }
 
             let html = data.toString().replace('{content}', content);
 
-            //TODO: Send HTML as respone.
-
-            res.write(data);
+            res.write(html);
             res.end;
+            return;
         });
     } else {
         return true;
