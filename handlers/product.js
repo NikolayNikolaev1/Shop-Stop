@@ -7,21 +7,21 @@ const qs = require('querystring');
 const multiparty = require('multiparty');
 const shortid = require('shortid');
 
-function getProducts() {
-    if (!fs.exists(dbPath)) {
-        fs.writeFileSync(dbPath, '[]')
-        return [];
-    }
+// function getProducts() {
+//     if (!fs.exists(dbPath)) {
+//         fs.writeFileSync(dbPath, '[]')
+//         return [];
+//     }
 
-    let json = fs.readFileSync(dbPath).toString() || '[]';
-    let products = json.parse(json);
-    return products;
-}
+//     let json = fs.readFileSync(dbPath).toString() || '[]';
+//     let products = json.parse(json);
+//     return products;
+// }
 
-function saveProducts(products) {
-    let json = JSON.stringify(products);
-    fs.writeFileSync(dbPath, json);
-}
+// function saveProducts(products) {
+//     let json = JSON.stringify(products);
+//     fs.writeFileSync(dbPath, json);
+// }
 
 module.exports = (req, res) => {
     req.pathname = req.pathname || url.parse(req.url).pathname;
@@ -105,17 +105,4 @@ module.exports = (req, res) => {
     } else {
         return true;
     }
-}
-
-module.exports.products.getAll = getProducts;
-
-module.exports.products.add = (product) => {
-    let products = getProducts();
-    product.id = products.length + 1;
-    products.push(product);
-    saveProducts(products);
-}
-
-module.exports.products.findByName = (name) => {
-    return getProducts().filter(p => p.name.toLowerCase().includes(name));
 }
