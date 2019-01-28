@@ -92,14 +92,14 @@ module.exports = (req, res) => {
             }
         });
 
-        form.on('close', () => {
-            database.products.add(product);
-            res.writeHead(302, {
-                Location: '/'
-            });
+        // form.on('close', () => {
+        //     database.products.add(product);
+        //     res.writeHead(302, {
+        //         Location: '/'
+        //     });
 
-            res.end();
-        });
+        //     res.end();
+        // });
         
         form.parse(req);
     } else {

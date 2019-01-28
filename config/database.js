@@ -1,24 +1,24 @@
-let products = [];
-let count = 1;
+const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 
-module.exports.products = {};
+module.exports = (config) => {
+    mongoose.connect(config.connectionString);
 
-module.exports.products.getAll = () => {
-    return products;
-}
+    let database = mongoose.connection;
 
-module.exports.products.add = (product) => {
-    product.id = count++;
-    products.push(product);
-}
-
-module.exports.products.findByName = (name) => {
-    let product = null;
-    for (let p of products) {
-        if (p.name === name) {
-            return p;
+    database.once('open', (err) => {
+        if (err) {
+            console.log(err);
+            return;
         }
-    }
 
-    return product;
+        console.log('Connected!');
+    });
+
+    require('../models/Product');
+
+    database.on('error', (err) => {
+        console.log(err);
+        return;
+    });
 }
