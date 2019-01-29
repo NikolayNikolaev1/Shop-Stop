@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/NikolayNikolaev1/Shop-Stop#readme",
   "dependencies": {
+    "formidable": "^1.2.1",
     "mongoose": "^5.4.7",
     "multiparty": "^4.2.1",
     "shortid": "^2.2.14"
