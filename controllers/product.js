@@ -45,6 +45,8 @@ module.exports.editGet = (req, res) => {
 }
 
 module.exports.editPost = async (req, res) => {
+    console.log('post');
+    
     let id = req.params.id;
     let editedProduct = req.body;
 
@@ -70,6 +72,10 @@ module.exports.editPost = async (req, res) => {
         });
 
     // First we check if the category is changed.
+    console.log(product.category.toString());
+    console.log(editedProduct.category);
+    
+    
     if (product.category.toString() !== editedProduct.category) {
         // If so find the "current" and "next" category.
         Category
@@ -104,6 +110,8 @@ module.exports.editPost = async (req, res) => {
                     });
             });
     } else {
+        console.log('here!');
+        
         process
             .save()
             .then(() => {
