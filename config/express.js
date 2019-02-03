@@ -1,8 +1,16 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const handlebars = require('express-handlebars');
 
 module.exports = (app, config) => {
+    app.engine('.hbs', handlebars({
+        defaultLayout: 'layout',
+        extname: '.hbs'
+    }));
+
+    app.set('view engine', '.hbs');
+
     //Configure middleware for parsing form data.
     app.use(bodyParser.urlencoded({ extended: true }));
 
