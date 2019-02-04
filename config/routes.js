@@ -14,4 +14,7 @@ module.exports = (app) => {
     app.get('/category/add', controllers.category.addGet);
     app.post('/category/add', controllers.category.addPost);
     app.get('/category/:category/products', controllers.category.productByCategory);
+
+    app.get('/user/register', controllers.user.registerGet);
+    app.post('/user/register', controllers.user.registerPost);
 }
