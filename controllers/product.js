@@ -14,7 +14,7 @@ module.exports.addGet = (req, res) => {
 
 module.exports.addPost = async (req, res) => {
     let productObj = req.body;
-    productObj.image = req.file.destination + '\\' + req.file.originalname;
+    productObj.image = '\\' + req.file.path;
     productObj.creator = req.user._id;
 
     let product = await Product.create(productObj);
@@ -150,5 +150,42 @@ module.exports.deletePost = (req, res) => {
             } else {
                 res.redirect(`/?error=${encodeURIComponent('You cannot delete this product!')}`);
             }
+    })
+}
+
+module.exports.buyGet = (req, res) => {
+    let id = req.params.id;
+    
+    Product
+        .findById(id)
+        .then(product => {
+            if (!product){
+                res.sendStatus(404);
+                return;
+            }
+
+            res.render('product/buy', { product });
+    })
+}
+
+module.exports.buyPost = (req, res) => {
+    let productId= req.params.id;
+
+    Product
+        .findById(productId)
+        .then(product => {
+            if (product.buyer) {
+                let error = `error=${encodeURIComponent('Product was already bought!')}`;
+                res.redirect(`/?${error}`);
+                return;
+            }
+
+            product.buyer = req.user._id;
+            product.save().then(() => {
+                req.user.boughtProducts.push(productId);
+                req.user.save().then(() => {
+                    res.redirect('/');
+                })
+        })
     })
 }
