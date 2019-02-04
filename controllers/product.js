@@ -46,6 +46,8 @@ module.exports.editGet = (req, res) => {
 }
 
 module.exports.editPost = (req, res) => {
+    console.log('post');
+    
     let id = req.params.id;
     let editedProduct = req.body;
 
@@ -70,20 +72,22 @@ module.exports.editPost = (req, res) => {
                     Category
                         .findById(product.category)
                         .then((currentCategory) => {
-                            Category.findById(editedProduct.category).then((nextCategory) => {
-                                let index = currentCategory.products.indexOf(product._id);
-                                if (index >= 0) {
-                                    currentCategory.products.splice(index, 1);
-                                }
-                                currentCategory.save();
+                            Category
+                                .findById(editedProduct.category)
+                                .then((nextCategory) => {
+                                    let index = currentCategory.products.indexOf(product._id);
+                                    if (index >= 0) {
+                                        currentCategory.products.splice(index, 1);
+                                    }
+                                    currentCategory.save();
 
-                                nextCategory.products.push(product._id);
-                                nextCategory.save();
+                                    nextCategory.products.push(product._id);
+                                    nextCategory.save();
 
-                                product.category = editedProduct.category;
+                                    product.category = editedProduct.category;
 
-                                product.save().then(() => {
-                                    res.redirect('/?success=' + encodeURIComponent('Product was edited successfully'));
+                                    product.save().then(() => {
+                                        res.redirect('/?success=' + encodeURIComponent('Product was edited successfully'));
                                 })
                         })
                     })
@@ -92,8 +96,59 @@ module.exports.editPost = (req, res) => {
                         res.redirect('/?success=' + encodeURIComponent('Product was edited successfully'));
                     })
                 }
-        } else {
-            res.redirect(`/?error=${encodeURIComponent('You cannot edit this product!')}`);
-        }
+            } else {
+                res.redirect(`/?error=${encodeURIComponent('You cannot edit this product!')}`);
+            }
+    })
+}
+
+module.exports.deleteGet = (req, res) => {
+    let id = req.params.id;
+    Product
+        .findById(id)
+        .then(product => {
+            if(!product){
+                res.sendStatus(404);
+                return;
+            }
+
+            if(product.creator.equals(req.user._id) || req.user.roles.indexOf('Admin') >= 0) {
+                res.render('product/delete', {product: product});
+            } else {
+                res.redirect(`/?error=${encodeURIComponent('You cannot delete this product!')}`);
+            }
+    })
+}
+
+module.exports.deletePost = (req, res) => {
+    let id = req.params.id;
+
+    Product
+        .findById(id)
+        .then((product) => {
+            if(!product) {
+                res.redirect(`/?error=${encodeURIComponent('Product was not found!')}`);
+                return;
+            }
+
+            if(product.creator.equals(req.user._id) || req.user.roles.indexOf('Admin') >= 0) {
+                Category
+                    .findById(product.category)
+                    .then((category) => {
+                        let index = category.products.indexOf(id);
+                        if(index >= 0) {
+                            category.products.splice(index, 1);                
+                        }
+                        category.save();
+                        
+                        Product.remove({_id: id}).then(() => {
+                            fs.unlink(path.normalize(path.join('.', product.image)), () => {
+                                res.redirect('/?success=' + encodeURIComponent('Product was deleted successfully'));             
+                            })
+                    })
+                })
+            } else {
+                res.redirect(`/?error=${encodeURIComponent('You cannot delete this product!')}`);
+            }
     })
 }

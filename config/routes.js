@@ -10,7 +10,9 @@ module.exports = (app) => {
     app.get('/product/add', auth.isAuthenticated, controllers.product.addGet);
     app.post('/product/add', auth.isAuthenticated, upload.single('image'), controllers.product.addPost);
     app.get('/product/edit/:id', auth.isAuthenticated, controllers.product.editGet);
-    app.post('/produt/edit/:id', auth.isAuthenticated, upload.single('image'), controllers.product.editPost);
+    app.post('/product/edit/:id', auth.isAuthenticated, upload.single('image'), controllers.product.editPost);
+    app.get('/product/delete/:id', auth.isAuthenticated, controllers.product.deleteGet);
+    app.post('/product/delete/:id', auth.isAuthenticated, controllers.product.deletePost);
 
     app.get('/category/add', auth.isInRole('Admin'), controllers.category.addGet);
     app.post('/category/add', auth.isInRole('Admin'), controllers.category.addPost);
