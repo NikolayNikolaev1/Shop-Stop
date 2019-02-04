@@ -28,6 +28,8 @@ module.exports = (app, config) => {
     next();
   });
 
+  app.use(express.static(path.normalize(path.join(config.rootPath, 'content'))));
+
   app.use((req, res, next) => {
     if (req.url.startsWith('/content')){
       req.url = req.url.replace('/content', '');
