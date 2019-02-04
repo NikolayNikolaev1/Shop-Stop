@@ -15,6 +15,7 @@ module.exports.addGet = (req, res) => {
 module.exports.addPost = async (req, res) => {
     let productObj = req.body;
     productObj.image = req.file.destination + '\\' + req.file.originalname;
+    productObj.creator = req.user._id;
 
     let product = await Product.create(productObj);
     let category = await Category.findById(product.category);
@@ -44,80 +45,55 @@ module.exports.editGet = (req, res) => {
         });
 }
 
-module.exports.editPost = async (req, res) => {
-    console.log('post');
-    
+module.exports.editPost = (req, res) => {
     let id = req.params.id;
     let editedProduct = req.body;
 
-    let product = await Product.findById(id);
+    Product
+        .findById(id)
+        .then((product) => {
+            if (!product) {
+                res.redirect(`/?error=${encodeURIComponent('Product was not found!')}`);
+                return;
+            }
 
-    if (!product) {
-        res.redirect(`/?error=${encodeURIComponent('Product wa not found!')}`);
-        return;
-    }
+            if (product.creator.equals(req.user._id) || req.user.roles.indexOf('Admin') >= 0) {
+                product.name = editedProduct.name;
+                product.description = editedProduct.description;
+                product.price = editedProduct.price;
 
-    product.name = editedProduct.name;
-    product.description = editedProduct.description;
-    product.price = editedProduct.price;
+                if (req.file) {
+                    product.image = '\\' + req.file.path;
+                }
 
-    if (req.file) {
-        product.image = req.file.destination + '\\' + req.file.originalname;
-    }
+                if (product.category.toString() !== editedProduct.category) {
+                    Category
+                        .findById(product.category)
+                        .then((currentCategory) => {
+                            Category.findById(editedProduct.category).then((nextCategory) => {
+                                let index = currentCategory.products.indexOf(product._id);
+                                if (index >= 0) {
+                                    currentCategory.products.splice(index, 1);
+                                }
+                                currentCategory.save();
 
-    product
-        .save()
-        .then(() => {
-            res.redirect(`/?success=${encodeURIComponent('Product was edited successfully!')}`);
-        });
+                                nextCategory.products.push(product._id);
+                                nextCategory.save();
 
-    // First we check if the category is changed.
-    console.log(product.category.toString());
-    console.log(editedProduct.category);
-    
-    
-    if (product.category.toString() !== editedProduct.category) {
-        // If so find the "current" and "next" category.
-        Category
-            .findById(product.category)
-            .then((currentCategory) => {
-                Category
-                    .findById(editedProduct.category)
-                    .then((nextCategory) => {
-                        let index = currentCategory.products.indexOf(product._id);
+                                product.category = editedProduct.category;
 
-                        if (index >= 0) {
-                            // Remove product specified
-                            // from current category's list of products.
-                            currentCategory.products.splice(index, 1);
-                        }
-
-                        currentCategory.save();
-
-                        // Add product's reference to the "new" category.
-                        nextCategory.products.push(product._id);
-                        nextCategory.save();
-
-                        product.category = editedProduct.category;
-
-                        product
-                            .save()
-                            .then(() => {
-                                res.redirect(
-                                    `/?success=` + // String interpolation avoided for space.
-                                    encodeURIComponent('Product was edited successfully!'));
-                            });
-                    });
-            });
-    } else {
-        console.log('here!');
-        
-        process
-            .save()
-            .then(() => {
-                res.redirect(
-                    `/?success=` + // String interpolation avoided for space.
-                    encodeURIComponent('Product was edited successfully!'));
-            });
-    }
+                                product.save().then(() => {
+                                    res.redirect('/?success=' + encodeURIComponent('Product was edited successfully'));
+                                })
+                        })
+                    })
+                } else {
+                    product.save().then(() => {
+                        res.redirect('/?success=' + encodeURIComponent('Product was edited successfully'));
+                    })
+                }
+        } else {
+            res.redirect(`/?error=${encodeURIComponent('You cannot edit this product!')}`);
+        }
+    })
 }

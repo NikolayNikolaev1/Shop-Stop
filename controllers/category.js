@@ -7,6 +7,7 @@ module.exports.addGet = (req, res) => {
 
 module.exports.addPost = async (req, res) => {
     let category = req.body;
+    category.creator = req.user._id;
     await Category.create(category);
     res.redirect('/');
 }

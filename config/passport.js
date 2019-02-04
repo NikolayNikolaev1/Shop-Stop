@@ -15,7 +15,7 @@ module.exports = () => {
                     return done(null, false);
                 }
 
-                return done(null, false);
+                return done(null, user);
             });
     }));
 
@@ -33,7 +33,7 @@ module.exports = () => {
                     return done(null, false);
                 }
 
-                return done(null, false);
+                return done(null, user);
             });
     });
 }

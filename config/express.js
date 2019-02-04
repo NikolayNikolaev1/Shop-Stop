@@ -11,7 +11,8 @@ module.exports = (app, config) => {
     defaultLayout: 'layout',
     extname: '.hbs'
   }));
-  app.set('view engine', '.hbs')
+  
+  app.set('views', path.join(config.rootPath, 'views'))
 
   app.use(bodyParser.urlencoded({extended: true}))
 
@@ -22,11 +23,20 @@ module.exports = (app, config) => {
 
   app.use((req, res, next) => {
     if (req.user) {
-      res.locals.user = req.user;
+        res.locals.user = req.user;
     }
 
     next();
+  })
+
+  app.use((req, res, next) => {
+    if (req.user) {
+        res.locals.isAdmin = req.user.roles.indexOf('Admin') !== -1;
+    }
+    next();
   });
+
+  app.set('view engine', '.hbs')
 
   app.use(express.static(path.normalize(path.join(config.rootPath, 'content'))));
 

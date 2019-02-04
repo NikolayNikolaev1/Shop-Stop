@@ -13,14 +13,16 @@
   <header>
     <nav class="nav">
       <ul>
-        {{#if user}}
         <li><a href="/">Home Page</a></li>
+        {{#if user}}
         <li><a href="/product/add">Add Product</a></li>
+        {{/if}} {{#if isAdmin}}
         <li><a href="/category/add">Add Category</a></li>
+        {{/if}} {{#if user}}
         <li class="align-right">Welcome {{user.username}}</li>
         <li class="align-right">
-          <form id="logout-form" method="POST" action="/user/logout">
-            <a href="javascript:document.getElementById("logout-form").submit()">Logout</a>
+          <form id="logout-form" action="/user/logout" method="POST">
+            <a href="javascript:document.getElementById('logout-form').submit()">Logout</a>
           </form>
         </li>
         {{else}}
